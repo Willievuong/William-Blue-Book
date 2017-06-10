@@ -1,0 +1,5 @@
+FortKnoxGoldClearcoatMettalic LightGreyClearcoatMetallic InfraRedClearcoat
+automatic manual automatic
+standard abs absAT
+notpresent present present
+notpresent present present
