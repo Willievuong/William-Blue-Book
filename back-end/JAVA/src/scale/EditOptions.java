@@ -33,7 +33,6 @@ public class EditOptions extends ProxyAutomobile implements Runnable {
 
 	// Edit Options within an OptionSet
 	public void run() {
-		// A While Loop? I need to use it to edit options
 		try {
 			while (running) {
 				String temp = " ";

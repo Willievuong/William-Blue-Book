@@ -20,7 +20,7 @@ public class Automobile implements Serializable {
 	public Automobile() {
 	}
 
-	public Automobile(String newName, String newModel, int newPrice, int newOpSetSize, int optionSize) {
+	public Automobile(String newName, String newModel, int newPrice, int newOpSetSize) {
 		this.make = newName;
 		this.model = newModel;
 		this.basePrice = newPrice;
@@ -28,14 +28,9 @@ public class Automobile implements Serializable {
 
 		// map.put(newModel,getClass());
 		OptionSet x[] = new OptionSet[newOpSetSize];
-		try {
-			for (int i = 0; i < newOpSetSize; i++) {
-				x[i] = new OptionSet();
-				opSetList.add(x[i]);
-				opSetList.get(i).initializeOptions(optionSize);
-			}
-		} catch (AutoException e) {
-			e.fix(0);
+		for (int i = 0; i < newOpSetSize; i++) {
+			x[i] = new OptionSet();
+			opSetList.add(x[i]);
 		}
 	}
 
@@ -75,7 +70,7 @@ public class Automobile implements Serializable {
 		this.basePrice = basePrice;
 	}
 
-	public synchronized void setOpSet(int opSetPosition, String Optname) { 
+	public synchronized void setOpSet(int opSetPosition, String Optname) {
 		this.opSetList.get(opSetPosition).setName(Optname);
 	}
 

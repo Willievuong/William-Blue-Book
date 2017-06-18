@@ -2,13 +2,87 @@ package util;
 
 import model.*;
 import java.io.*;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import exception.AutoException;
 
 public class FileIO {
 
+	Properties file = new Properties();
+
 	// Read File
+	// Do One For Client
+	public Properties buildCarProperties(String filename, String fileType) {
+		Properties props = new Properties(); //
+		Automobile newCar = new Automobile();
+
+		try {
+			FileInputStream in = new FileInputStream(filename);
+			props.load(in); // This loads the entire file in memory.
+		} catch (IOException e) {
+			System.out.println("Error нн " + e.toString());
+		}
+
+		return props;
+	}
+
+	// Do One For Server
+
+	public Automobile parseProperty(Properties props) {
+		Automobile newCar = new Automobile();
+
+		String CarMake = props.getProperty("CarMake"); // this is how you read
+														// a property. It is
+														// like gettting a
+														// value from
+														// HashTable.
+
+		if (!CarMake.equals(null)) {
+			String optionSetSize = props.getProperty("OptionSetSize");
+			String CarModel = props.getProperty("CarModel");
+			String price = props.getProperty("BasePrice");
+			String Option0 = props.getProperty("Option0");
+			String OptionValue0a = props.getProperty("OptionValue0a");
+			String OptionValue0b = props.getProperty("OptionValue0b");
+			// String OptionValue0c = props.getProperty("OptionValue0c");
+			String Option1 = props.getProperty("Option1");
+			String OptionValue1a = props.getProperty("OptionValue1a");
+			String OptionValue1b = props.getProperty("OptionValue1b");
+			String Option2 = props.getProperty("Option2");
+			String OptionValue2a = props.getProperty("OptionValue2a");
+			String OptionValue2b = props.getProperty("OptionValue2b");
+			// String OptionValue2c = props.getProperty("OptionValue2c");
+			String Option3 = props.getProperty("Option3");
+			String OptionValue3a = props.getProperty("OptionValue3a");
+			String OptionValue3b = props.getProperty("OptionValue3b");
+			String Option4 = props.getProperty("Option4");
+			String OptionValue4a = props.getProperty("OptionValue4a");
+			String OptionValue4b = props.getProperty("OptionValue4b");
+
+			int basePrice = Integer.parseInt(price);
+			int opSetSize = Integer.parseInt(optionSetSize);
+			newCar = new Automobile(CarMake, CarModel, basePrice, opSetSize);
+
+			for (int i = 0; i < opSetSize; i++) {
+				newCar.setOpSet(i, Integer.toString(i));
+			}
+
+			newCar.addNewOption(0, OptionValue0a, priceCheckIndividual(OptionValue0a, 0));
+			newCar.addNewOption(0, OptionValue1a, priceCheckIndividual(OptionValue1a, 0));
+			newCar.addNewOption(0, OptionValue2a, priceCheckIndividual(OptionValue2a, 0));
+			newCar.addNewOption(0, OptionValue3a, priceCheckIndividual(OptionValue3a, 0));
+			newCar.addNewOption(0, OptionValue4a, priceCheckIndividual(OptionValue4a, 0));
+
+			newCar.addNewOption(1, OptionValue0b, priceCheckIndividual(OptionValue0b, 0));
+			newCar.addNewOption(1, OptionValue1b, priceCheckIndividual(OptionValue1b, 0));
+			newCar.addNewOption(1, OptionValue2b, priceCheckIndividual(OptionValue2b, 0));
+			newCar.addNewOption(1, OptionValue3b, priceCheckIndividual(OptionValue3b, 0));
+			newCar.addNewOption(1, OptionValue4b, priceCheckIndividual(OptionValue4b, 0));
+		}
+		return newCar;
+	}
+
 	public Automobile BuildCar(String fname) {
 		Automobile car = new Automobile();
 		int counter = 0;
@@ -35,8 +109,8 @@ public class FileIO {
 							car = buildCar(line, car, optionSize);
 						} catch (AutoException e) {
 							e.fix(4);
-							car = new Automobile("NO MAKER", "NO MODEL", 0, optionSize, optionSize); // Temporary
-																										// Fix
+							car = new Automobile("NO MAKER", "NO MODEL", 0, optionSize); // Temporary
+																							// Fix
 						}
 					}
 					if (counter > 2) {
@@ -74,7 +148,7 @@ public class FileIO {
 			if (i == 3)
 				optionSetSize = Integer.parseInt(st[i]);
 		}
-		Automobile tempCar = new Automobile(makeName, modelName, basePrice, optionSetSize, optionSize);
+		Automobile tempCar = new Automobile(makeName, modelName, basePrice, optionSetSize);
 		return tempCar;
 	}
 
@@ -84,7 +158,6 @@ public class FileIO {
 		String[] tokenz = temp.split(delim);
 		int[] priceChecker = priceCheck(tokenz, optionSize);
 
-	
 		if (optionIndex - 3 < car.getOpSetSize()) {
 			car.setOpSet(optionIndex - 3, Integer.toString(optionIndex - 3));
 			for (int i = 0; i < tokenz.length; i++) {
@@ -93,6 +166,43 @@ public class FileIO {
 		}
 
 		return car;
+
+	}
+
+	public int priceCheckIndividual(String name, int index) {
+		int price = 0;
+		if (index == 0) {
+			price = 0;
+		} else if (index == 1) {
+			if (name.equals("automatic")) {
+				price = 0;
+			} else if (name.equals("standard")) {
+				price = -815;
+			}
+		} else if (index == 2) {
+
+			if (name.equals("standard")) {
+				price = 0;
+			} else if (name.equals("abs")) {
+				price = 400;
+			} else if (name.equals("absAT")) {
+				price = 1625;
+			}
+		} else if (index == 3) {
+			if (name.equals("present")) {
+				price = 350;
+			} else if (name.equals("notpresent")) {
+				price = 0;
+			}
+		} else if (index == 4) {
+			if (name.equals("present")) {
+				price = 595;
+			} else if (name.equals("notpresent")) {
+				price = 0;
+			}
+		}
+
+		return price;
 	}
 
 	public int[] priceCheck(String[] token, int optionSize) {
@@ -135,17 +245,12 @@ public class FileIO {
 
 		}
 
-		// System.out.println("PRINTING OUT PRICE VALUES");
-		// for(int x = 0; x < optPrice.length; x++){
-		// System.out.println(optPrice[x]);
-		// }
-
 		return optPrice;
 	}
 
 	// Need to fix serializing code, especially deserializing
 	// Serialize, copy from old code
-	public void serializing(Automobile car, int index) {
+	public void serializing(Object car, int index) {
 		try {
 			ObjectOutputStream p1 = new ObjectOutputStream(
 					new FileOutputStream("car" + Integer.toString(index) + ".dat"));
@@ -158,16 +263,45 @@ public class FileIO {
 		;
 	}
 
-	// Deserialize, copy from old code
-	public void deserializing(Automobile car, int index) {
+	public void serializeReturnClient(Object car, int index) {
 		try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream("car" + Integer.toString(index) + ".dat"));
-			Automobile newCar = (Automobile) in.readObject();
-			System.out.println("\n--AFTER SERIALIZATION--");
-			newCar.print();
+			ObjectOutputStream p1 = new ObjectOutputStream(
+					new FileOutputStream("returnCar" + Integer.toString(index) + ".dat"));
+			p1.writeObject(car);
+			p1.close();
+
 		} catch (Exception e) {
 			System.out.println("Error -- " + e.toString());
 		}
+		;
+	}
+
+
+	// Deserialize, copy from old code
+	public Properties deserializing(int index) {
+		Properties loadedFile = new Properties();
+
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream("car" + Integer.toString(index) + ".dat"));
+			Properties newCar = (Properties) in.readObject();
+			loadedFile = newCar;
+		} catch (Exception e) {
+			System.out.println("Error -- " + e.toString());
+		}
+		return loadedFile;
+	}
+	
+	public Automobile deserializingReturnCar(int index) {
+		Automobile loadedFile = new Automobile();
+
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream("returnCar" + Integer.toString(index) + ".dat"));
+			Automobile newCar = (Automobile) in.readObject();
+			loadedFile = newCar;
+		} catch (Exception e) {
+			System.out.println("Error -- " + e.toString());
+		}
+		return loadedFile;
 	}
 }
 

@@ -4,6 +4,7 @@ import model.*;
 import java.lang.Thread; 
 import scale.EditOptions;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 import java.util.Scanner;
 
 import exception.*;
@@ -13,7 +14,7 @@ public abstract class ProxyAutomobile {
 	private static Automobile a1;
 	private AutoException exceptionHandler = new AutoException();
 	public static LinkedHashMap<Integer, Automobile> map = new LinkedHashMap<Integer, Automobile>();
-
+	
 	public void BuildAuto(String fileName, int iterator) {
 		FileIO input = new FileIO();
 		Automobile car = new Automobile();
@@ -22,8 +23,21 @@ public abstract class ProxyAutomobile {
 		map.put(iterator, a1);
 	}
 	
+	public void BuildAutoProperties(Properties clientProp, int iterator){
+		FileIO Input = new FileIO();
+		Automobile car = new Automobile();
+		car = Input.parseProperty(clientProp);
+		//Use the properties to build a car
+		a1 = car;
+		map.put(iterator, a1);
+	}
+	
 	public Automobile getKey(int iteratorPosition){
 		return map.get(iteratorPosition);
+	}
+	
+	public void stageAuto(Automobile loadedCar){
+		a1 = loadedCar; 
 	}
 	
 	public void updateOptionSetName(String ModelName, String OptionSetname, String newName) {
@@ -83,7 +97,7 @@ public abstract class ProxyAutomobile {
 	public void printOptionSetOperation() {
 		System.out.println("Select an Operation");
 		System.out.println("OptionSet");
-		System.out.println("#0\n#1\n#2");
+		System.out.println("#0\n#1\n");
 	}
 
 	public void printOptionOperation() {
@@ -95,17 +109,34 @@ public abstract class ProxyAutomobile {
 		System.out.println("4 \t\t  Edit SunRoof");
 	}
 
-	public void printAuto(String ModelName) {
-		// Print the properties of the given model, that is, the entire car.
-		if (a1.getName().equals(ModelName)) {
+	public void printAuto() {
 			try {
 				a1.print();
 			} catch (AutoException e) {
 				e.fix(3);
 			}
-		}
 	}
 
+	public String printAllModel(){
+		Automobile car = new Automobile(); 
+		String modelName = ""; 
+		String allModel = ""; 
+		for(int i = 0; i < map.size(); i++){
+			car = map.get(i);
+			modelName = car.getModel();
+			allModel = allModel + Integer.toString(i) + ". " + modelName + " "; 
+			//System.out.println(modelName);
+		}
+		
+		return allModel; 
+	}
+	
+	public void serializeSelectedCar(int key){
+		FileIO serializer = new FileIO(); 
+		
+		serializer.serializeReturnClient(map.get(key),key);
+		
+	}
 	public void fix(int errorno) {
 		exceptionHandler.fix(errorno);
 	}
